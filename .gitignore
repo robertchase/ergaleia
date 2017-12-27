@@ -1,0 +1,8 @@
+*.pyc
+.ropeproject
+.cache
+env
+.env
+.DS_Store
+tmp*
+*.swp
