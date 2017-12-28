@@ -18,7 +18,7 @@ else:
 class XmlToDict(ContentHandler):
 
     def __init__(self, groupby=None):
-        self.data = b'' if PY3 else ''
+        self.data = ''
         self.stack = [(None, {})]
 
     def startElement(self, name, attrs):
@@ -26,7 +26,7 @@ class XmlToDict(ContentHandler):
 
     def endElement(self, name):
         value = self.data.strip()
-        self.data = b'' if PY3 else ''
+        self.data = ''
 
         name, collection = self.stack.pop()
         p_name, p_collection = self.stack[-1]
@@ -43,8 +43,7 @@ class XmlToDict(ContentHandler):
             p_collection[name] = value
 
     def characters(self, ch):
-        if not PY3:
-            self.data += ch.encode('ascii')
+        self.data += ch if PY3 else ch.encode('ascii')
 
 
 def from_xml(data, handler_class=XmlToDict):
