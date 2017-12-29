@@ -1,3 +1,8 @@
+'''
+The MIT License (MIT)
+
+https://github.com/robertchase/ergaleia/blob/master/LICENSE.txt
+'''
 def nested_get(d, keys, default=None, required=False, as_list=False):
     """ Multi-level dict get helper
 

@@ -4,7 +4,7 @@ try:
 except Exception:
     from io import StringIO
 
-import tools.load_from_path as load_from_path
+import ergaleia.load_from_path as load_from_path
 
 
 @pytest.fixture

@@ -1,5 +1,5 @@
 import pytest
-import tools.config as config
+import ergaleia.config as config
 
 
 @pytest.mark.parametrize('value,expected', [

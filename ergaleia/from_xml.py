@@ -1,7 +1,7 @@
 '''
 The MIT License (MIT)
 
-https://github.com/robertchase/tools/blob/master/LICENSE.txt
+https://github.com/robertchase/ergaleia/blob/master/LICENSE.txt
 '''
 import sys
 from xml.sax import make_parser

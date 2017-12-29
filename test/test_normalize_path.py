@@ -1,6 +1,6 @@
 import os
 
-from tools.normalize_path import normalize_path
+from ergaleia.normalize_path import normalize_path
 
 
 BASE = os.path.sep.join(__file__.split(os.path.sep)[:-2])

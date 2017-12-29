@@ -1,9 +1,9 @@
 '''
 The MIT License (MIT)
 
-https://github.com/robertchase/tools/blob/master/LICENSE.txt
+https://github.com/robertchase/ergaleia/blob/master/LICENSE.txt
 '''
-from tools.normalize_path import normalize_path
+from ergaleia.normalize_path import normalize_path
 
 
 def load_from_path(path, filetype=None):

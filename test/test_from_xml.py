@@ -1,7 +1,7 @@
 import pytest
 import xml
 
-from tools.from_xml import from_xml
+from ergaleia.from_xml import from_xml
 
 
 def test_empty():

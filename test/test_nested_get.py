@@ -1,6 +1,6 @@
 import pytest
 
-from tools.nested_get import nested_get
+from ergaleia.nested_get import nested_get
 
 
 @pytest.fixture

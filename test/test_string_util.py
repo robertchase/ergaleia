@@ -1,5 +1,5 @@
 import pytest
-import tools.string_util as string_util
+import ergaleia.string_util as string_util
 
 
 @pytest.mark.parametrize('value,expected', [

@@ -1,12 +1,12 @@
 '''
 The MIT License (MIT)
 
-https://github.com/robertchase/tools/blob/master/LICENSE.txt
+https://github.com/robertchase/ergaleia/blob/master/LICENSE.txt
 '''
 import os
 
-from tools.load_from_path import load_lines_from_path
-import tools.string_util as string_util
+from ergaleia.load_from_path import load_lines_from_path
+import ergaleia.string_util as string_util
 
 
 class Config (object):
