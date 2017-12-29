@@ -5,14 +5,20 @@ https://github.com/robertchase/tools/blob/master/LICENSE.txt
 '''
 
 
-def un_comment(s, comment='#'):
+def un_comment(s, comment='#', strip=True):
     """ uncomment a string
 
         truncate s at first occurrence of a non-escaped comment character
-
         remove escapes from escaped comment characters
 
-        don't use when speed is important
+        Parameters:
+            s       - string to uncomment
+            comment - comment character (default=#) (see Note 1)
+            strip   - strip line after uncomment (default=True)
+
+        Notes:
+            1. Comment character can be escaped using \.
+            2. Don't use when speed is important.
     """
     escape = '\\'
     is_escape = False
@@ -22,7 +28,7 @@ def un_comment(s, comment='#'):
             if is_escape:
                 is_escape = False
             else:
-                return result
+                break
         if is_escape:
             result += escape
         if c == escape:
@@ -30,6 +36,8 @@ def un_comment(s, comment='#'):
         else:
             is_escape = False
             result += c
+    if strip:
+        result = result.strip()
     return result
 
 

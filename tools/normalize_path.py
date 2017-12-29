@@ -17,12 +17,11 @@ else:
 def normalize_path(path, filetype=None):
     """ Convert dot-separated paths to directory paths
 
-    Allows non-python files to be placed in the PYTHONPATH and be
-    referenced using dot-notation instead of absolute or relative
-    file-system paths.
+    Allows non-python files to be placed in the PYTHONPATH and be referenced
+    using dot-notation instead of absolute or relative file-system paths.
 
-    If a text file, named test.txt was placed in a python repo
-    named myprog in the module named util, then:
+    If a text file, named test.txt was placed in a python repo named myprog in
+    the module named util, then:
 
         normalize_path('myprog.util.test.txt', 'txt')
 

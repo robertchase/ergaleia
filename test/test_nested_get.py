@@ -38,12 +38,12 @@ def test_required_typeerror(data):
         assert nested_get(data, ('a', 'b', 'c', 'd'), required=True)
 
 
-def test_list(data):
+def test_as_list(data):
     assert nested_get(data, ('a', 'b', 'c'), as_list=True) == [10]
     assert nested_get(data, ('a', 'b'), as_list=True) == [{'c': 10}]
 
 
-def test_list_default(data):
+def test_as_list_default(data):
     assert nested_get(data, ('a', 'b', 'c', 'd'), as_list=True) == []
     assert nested_get(
         data, ('a', 'b', 'c', 'd'), default='foo', as_list=True

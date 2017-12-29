@@ -10,13 +10,25 @@ import tools.string_util as string_util
     ('\#te#st', '#te'),
     ('te#s#t', 'te'),
     ('#te#s#t', ''),
-    ('\f\o\o', '\f\o\o'),
-    ('\f\o#o', '\f\o'),
-    ('\f\o\#o', '\f\o#o'),
-    ('\f\o\##o', '\f\o#'),
+    ('\b\o\o', '\b\o\o'),
+    ('\b\o#o', '\b\o'),
+    ('\b\o\#o', '\b\o#o'),
+    ('\b\o\##o', '\b\o#'),
 ])
 def test_un_comment(value, expected):
     assert string_util.un_comment(value) == expected
+
+
+@pytest.mark.parametrize('value,strip,expected', [
+    ('test', True, 'test'),
+    ('test', False, 'test'),
+    (' test  ', True, 'test'),
+    (' test  ', False, ' test  '),
+    (' te  #  st  ', True, 'te'),
+    (' te  #  st  ', False, ' te  '),
+])
+def test_un_comment_strip(value, strip, expected):
+    assert string_util.un_comment(value, strip=strip) == expected
 
 
 @pytest.mark.parametrize('value,args_expected,kwargs_expected', [
