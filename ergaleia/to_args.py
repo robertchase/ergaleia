@@ -5,40 +5,66 @@ https://github.com/robertchase/ergaleia/blob/master/LICENSE.txt
 '''
 
 
-def un_comment(s, comment='#', strip=True):
-    """ uncomment a string
+def to_args(s):
+    """ parse a string into args and kwargs
 
-        truncate s at first occurrence of a non-escaped comment character
-        remove escapes from escaped comment characters
+        the input is a blank-delimited set of tokens, which may be grouped
+        as strings (tick or double tick delimited) with embedded blanks.
+        a non-string equal (=) acts as a delimiter between key-value pairs.
 
-        Parameters:
-            s       - string to uncomment
-            comment - comment character (default=#) (see Note 1)
-            strip   - strip line after uncomment (default=True)
+        the initial tokens are treated as args, followed by key-value pairs.
+
+        Example:
+
+            one 'two three' four=5 six='seven eight'
+
+            parses to:
+
+            args = ['one', 'two three']
+            kwargs = {'four': '5', 'six': 'seven eight'}
+
+        Return:
+
+            args as list
+            kwargs as dict
 
         Notes:
-            1. Comment character can be escaped using \.
-            2. Don't use when speed is important.
+
+            1. Does not enforce args and keywords as valid python.
+
+            2. String delimiters can be escaped (\) within strings.
+
+            3. Key-value delimiters (=) can be surrounded by blanks.
+
+            4. Designed for functionality, not speed
     """
-    escape = '\\'
-    is_escape = False
-    result = ''
-    for c in s:
-        if c == comment:
-            if is_escape:
-                is_escape = False
+    args = []
+    kwargs = {}
+    state = 'arg'
+    for token in to_tokens(s):
+        if state == 'arg':
+            if token.is_key:
+                key = token.value
+                state = 'value'
             else:
-                break
-        if is_escape:
-            result += escape
-        if c == escape:
-            is_escape = True
-        else:
-            is_escape = False
-            result += c
-    if strip:
-        result = result.strip()
-    return result
+                args.append(token.value)
+        elif state == 'key':
+            if not token.is_key:
+                raise ExpectingKey(token.value)
+            key = token.value
+            if key in kwargs:
+                raise DuplicateKey(key)
+            state = 'value'
+        elif state == 'value':
+            if token.is_key:
+                raise ConsecutiveKeys(token.value)
+            kwargs[key] = token.value
+            state = 'key'
+
+    if state == 'value':
+        raise IncompleteKeyValue(key)
+
+    return args, kwargs
 
 
 class Atom(object):
@@ -193,65 +219,3 @@ def to_tokens(s):
         tokens.append(token)
 
     return tokens
-
-
-def to_args(s):
-    """ parse a string into args and kwargs
-
-        the input is a blank-delimited set of tokens, which may be grouped
-        as strings (tick or double tick delimited) with embedded blanks.
-        a non-string equal (=) acts as a delimiter between key-value pairs.
-
-        the initial tokens are treated as args, followed by key-value pairs.
-
-        Example:
-
-            one 'two three' four=5 six='seven eight'
-
-            parses to:
-
-            args = ['one', 'two three']
-            kwargs = {'four': '5', 'six': 'seven eight'}
-
-        Return:
-
-            args as list
-            kwargs as dict
-
-        Notes:
-
-            1. Does not enforce args and keywords as valid python.
-
-            2. String delimiters can be escaped (\) within strings.
-
-            3. Key-value delimiters (=) can be surrounded by blanks.
-
-            4. Designed for functionality, not speed
-    """
-    args = []
-    kwargs = {}
-    state = 'arg'
-    for token in to_tokens(s):
-        if state == 'arg':
-            if token.is_key:
-                key = token.value
-                state = 'value'
-            else:
-                args.append(token.value)
-        elif state == 'key':
-            if not token.is_key:
-                raise ExpectingKey(token.value)
-            key = token.value
-            if key in kwargs:
-                raise DuplicateKey(key)
-            state = 'value'
-        elif state == 'value':
-            if token.is_key:
-                raise ConsecutiveKeys(token.value)
-            kwargs[key] = token.value
-            state = 'key'
-
-    if state == 'value':
-        raise IncompleteKeyValue(key)
-
-    return args, kwargs

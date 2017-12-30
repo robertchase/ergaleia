@@ -6,7 +6,8 @@ https://github.com/robertchase/ergaleia/blob/master/LICENSE.txt
 import os
 
 from ergaleia.load_from_path import load_lines_from_path
-import ergaleia.string_util as string_util
+from ergaleia.to_args import to_args
+from ergaleia.un_comment import un_comment
 
 
 class Config (object):
@@ -114,7 +115,7 @@ class Config (object):
         data = load_lines_from_path(path)
         for num, line in enumerate(data, start=1):
             try:
-                args, kwargs = string_util.to_args(line)
+                args, kwargs = to_args(line)
                 if 'validator' in kwargs:
                     validator = kwargs.get('validator')
                     try:
@@ -166,7 +167,7 @@ class Config (object):
 
         for lineno, line in enumerate(config, start=1):
 
-            line = string_util.un_comment(line)
+            line = un_comment(line)
             if len(line) == 0:
                 continue
 
