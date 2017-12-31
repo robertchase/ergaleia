@@ -73,6 +73,12 @@ def test_load(cfg):
     assert cfg.foo == '123'
 
 
+def test_load_relaxed():
+    cfg = config.Config()
+    cfg._load(['foo=123', 'foo=234', '#foo=345'], relaxed=True)
+    assert cfg.foo == '234'
+
+
 @pytest.mark.parametrize('value,expected', [
     (['foo=test', '#foo=comment'], 'test'),
     (['foo=test#etc'], 'test'),
