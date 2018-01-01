@@ -24,6 +24,12 @@ def test_to_args(value, args_expected, kwargs_expected):
         v == kwargs_expected[k]
 
 
+def test_numeric_value():
+    args, kwargs = to_args.to_args('a=10 b=20')
+    assert kwargs['a'] == 10
+    assert kwargs['b'] == 20
+
+
 @pytest.mark.parametrize('value,expected', [
     ('=', to_args.InvalidStartCharacter),
     ('a==', to_args.ConsecutiveEqual),

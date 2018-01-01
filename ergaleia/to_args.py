@@ -21,7 +21,7 @@ def to_args(s):
             parses to:
 
             args = ['one', 'two three']
-            kwargs = {'four': '5', 'six': 'seven eight'}
+            kwargs = {'four': 5, 'six': 'seven eight'}
 
         Return:
 
@@ -36,7 +36,10 @@ def to_args(s):
 
             3. Key-value delimiters (=) can be surrounded by blanks.
 
-            4. Designed for functionality, not speed
+            4. Non-string integer kwarg values will be int; all other
+               values are str.
+
+            5. Designed for functionality, not speed
     """
     args = []
     kwargs = {}
@@ -93,18 +96,18 @@ class Atom(object):
 
 class Token(object):
     def __init__(self):
-        self.value = ''
+        self._value = ''
         self.is_key = False
         self.string_delim = None
         self.is_escape = False
 
     def __repr__(self):
         t = 's' if self.is_string else 'k' if self.is_key else 't'
-        return '{}[{}]'.format(t, self.value)
+        return '{}[{}]'.format(t, self._value)
 
     @property
     def is_new(self):
-        return len(self.value) == 0
+        return len(self._value) == 0
 
     @property
     def is_string(self):
@@ -113,6 +116,13 @@ class Token(object):
     @property
     def is_escaped_string(self):
         return self.is_string and self.is_escape
+
+    @property
+    def value(self):
+        try:
+            return int(self._value)
+        except ValueError:
+            return self._value
 
     def add(self, atom):
         if self.is_new:
@@ -131,12 +141,12 @@ class Token(object):
             return
         if atom.is_equal:
             return 'equal'
-        self.value += atom.c
+        self._value += atom.c
 
     def _escaped_string(self, atom):
         if atom.c != self.string_delim:
-            self.value += atom.ESCAPE
-        self.value += atom.c
+            self._value += atom.ESCAPE
+        self._value += atom.c
         self.is_escape = False
 
     def _string(self, atom):
@@ -145,7 +155,7 @@ class Token(object):
             return
         if atom.c == self.string_delim:
             return 'done'
-        self.value += atom.c
+        self._value += atom.c
 
     def _normal(self, atom):
         if atom.is_space:
@@ -154,7 +164,7 @@ class Token(object):
             return 'equal'
         if atom.is_escape or atom.is_string:
             return 'invalid'
-        self.value += atom.c
+        self._value += atom.c
 
 
 class ToArgsException(Exception):
