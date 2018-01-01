@@ -32,10 +32,64 @@ class _branch(dict):
 
 
 class Config(_branch):
+    """ Manage 'key=value' style configuration records.
+
+        A Config is a constrained-key nested-dict whose values can be acccessed
+        using bracket or dot notation. Typically, the expected keys are defined
+        during setup, and the values are read from a configuration file.
+
+        Use a series of calls to the _define method to establish a valid
+        structure. Key names can contain dots (.) which act to separate the
+        name space and mitigate access to the Config data structure. For
+        instance:
+
+            c = Config()
+            c._define('server.port', value=1234)
+
+            # access the new key
+            assert c.server.port == 1234
+
+            # bracket notation works too
+            assert c['server']['port'] == 1234
+
+        Use the _load method to read and parse the values in a config file.
+        Only defined keys will be accepted. To change the default value in the
+        previous example, the config file might look like this:
+
+            server.port=2345
+
+      Notes:
+
+      1. Methods are prepended with '_' in order not to pollute the namespace
+         used by the defined values.
+
+      2. Valid names are composed of letters, digits, underscores and periods.
+         No part of a valid name can be composed only of digits.
+
+      3. The _load method ignores leading and trailing whitespace in the
+         names and values.
+
+      4. The _load method ignores anything including and following a '#'
+         character, thus allowing for comments. To prevent a '#' value from
+         starting a comment, escape it by preceeding it with a '\' character.
+
+      5. If the env parameter is specified on the _define function, and an
+         env variable of this name is set, then the value of the env variable
+         overrides the 'value' parameter and any parmemter read using the _load
+         method. Values which are directly set override env.
+    """
 
     def __init__(self, definition=None):
+        self.__dict__['_ordered_keys'] = []
         if definition:
             self._define_from_file(definition)
+
+    def __repr__(self):
+        return '\n'.join(
+            '{}={}'.format(
+                k, getattr(self, k) if getattr(self, k) is not None else ''
+            ) for k in self.__dict__['_ordered_keys']
+        )
 
     def __lookup(self, name):
         level = self
@@ -46,6 +100,9 @@ class Config(_branch):
         return level, itemname
 
     def _define(self, name, value=None, validator=None, env=None):
+        keys = self.__dict__['_ordered_keys']
+        if name not in keys:
+            keys.append(name)
         parts = name.split('.')
         parts, itemname = parts[:-1], parts[-1]
         level = self
@@ -91,9 +148,12 @@ class Config(_branch):
             if not line:
                 continue
             key, val = line.split('=', 1)
+            key = key.strip()
+            val = val.strip()
             if relaxed:
                 self._define(key)
-            self._set(key.strip(), val.strip())
+            level, itemname = self.__lookup(key)
+            level.get(itemname).load(val)
 
     def _get(self, name):
         level, itemname = self.__lookup(name)
@@ -110,6 +170,7 @@ class _item(object):
         self.reset(value, validator, env)
 
     def __setattr__(self, name, value):
+        """ directly setting value does not respect env """
         validator = self.validator
         if validator:
             value = validator(value)
@@ -117,9 +178,18 @@ class _item(object):
 
     def reset(self, value, validator, env):
         self.__dict__['validator'] = validator
+        self.__dict__['env'] = env
         if env:
             value = os.getenv(env, value)
         self.value = value
+
+    def load(self, value):
+        """ enforce env > value when loading from file """
+        self.reset(
+            value,
+            validator=self.__dict__.get('validator'),
+            env=self.__dict__.get('env'),
+        )
 
 
 def validate_int(value):

@@ -53,6 +53,7 @@ def cfg():
 
 def test_default(cfg):
     assert cfg.foo == 'bar'
+    assert cfg['foo'] == 'bar'
 
 
 def test_set(cfg):
@@ -66,6 +67,12 @@ def test_int(cfg):
     assert cfg.foo == 100
     with pytest.raises(ValueError):
         cfg._set('foo', 'wrong')
+
+
+def test_nested_name(cfg):
+    cfg._define('bar.foo', value=100)
+    assert cfg.bar.foo == 100
+    assert cfg['bar']['foo'] == 100
 
 
 def test_load(cfg):
@@ -101,3 +108,11 @@ def test_define_from_file():
     assert c.foo == 'bar'
     assert c.bar == 10
     assert c.foobar is None
+
+
+def test_repr(cfg):
+    assert str(cfg) == 'foo=bar'
+    cfg._define('akk', '100')
+    assert str(cfg) == 'foo=bar\nakk=100'
+    cfg._define('foo', 'something else')
+    assert str(cfg) == 'foo=something else\nakk=100'
