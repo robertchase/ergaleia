@@ -6,10 +6,9 @@ for managing configuration data.
 ## typical use case
 
 A `Config` object is typically used to manage configuration
-data read from set of `key=value` records in a file.
+data read from a set of `key=value` records in a file.
 The `Config` object is used to
-define expected keys
-and set default values.
+define and access the expected keys.
 
 #### example
 
@@ -144,10 +143,13 @@ ValueError: invalid literal for int() with base 10: 'bar'
 >>> c.foo = 20
 >>> c.foo
 20
+>>> c.foo = '30'
+>>> c.foo
+30
 ```
 
 #### env
-````
+```
 >>> import os
 >>> os.environ['FOO'] = 1234
 >>> c._define('foo', 10, int, 'FOO')
@@ -168,4 +170,71 @@ ValueError: invalid literal for int() with base 10: 'bar'
 >>> c['foo'] = 200
 >>> c.foo
 200
+```
+
+## other ways to define an attribute
+
+A `Config` can also be defined by reading definition statements from
+a `file` or `list` object using the `_define_from_file` method or the
+`Config` constructor.
+
+#### definition statement
+
+A definition statement is a blank-delimited sequence
+of tokens that contains elements that would normally be passed to
+the `_define` method. For instance, the following call to define:
+```
+c._define('foo', value=10, validator=int, env='FOO')
+```
+can be expressed with one of these definition statements:
+```
+'foo' value=10 validator=int env='FOO'
+
+foo value=10 validator=int env=FOO
+
+foo value= 10 validator =int env = FOO
+
+foo 10 int FOO
+```
+
+A definition statement looks like an argument list without the commas.
+It also assumes that the value of a kwarg argument is `int` if it
+is composed of numeric characters [0-9]; otherwise, the value is `str`.
+It is only necessary to include quotes around a string if it contains
+blanks.
+
+#### using _define_from_file
+```
+_define_from_file(self, defn)
+
+    Parameters:
+        defn - a file path, file name, file or list
+
+    Notes:
+        1. A `file path` is a dot-separated file name that resolved
+           to a file in the PYTHONPATH (See ergaleia.normalize_path).
+        2. A `file name` is an os-specific name of a file in the file
+           system. It will be located relative the the working
+           directory of the running python program.
+        3. A `file` is an object with a `readlines` method returning
+           zero or more lines.
+        4. `validator` can be one of int, bool or file.
+```
+For instance:
+```
+c._define_from_file([
+    'server.port value=10000 validator=int',
+    'server.ssl value=true, validator=bool',
+])
+```
+
+#### using the Config constructor
+
+The same set of definition statements can be passed to a `Config`
+constructor:
+```
+c = Config([
+    'server.port value=10000 validator=int',
+    'server.ssl value=true, validator=bool',
+])
 ```
