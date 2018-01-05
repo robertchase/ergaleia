@@ -124,8 +124,10 @@ class Config(_branch):
             level.setdefault(itemname, _item(value, validator, env))
 
     def _define_from_file(self, path):
-        data = load_lines_from_path(path)
+        data = un_comment(load_lines_from_path(path))
         for num, line in enumerate(data, start=1):
+            if not line:
+                continue
             try:
                 args, kwargs = to_args(line)
                 if 'validator' in kwargs:
@@ -143,8 +145,7 @@ class Config(_branch):
                 )
 
     def _load(self, path='config', relaxed=False):
-        for line in load_lines_from_path(path):
-            line = un_comment(line)
+        for line in un_comment(load_lines_from_path(path)):
             if not line:
                 continue
             key, val = line.split('=', 1)
@@ -192,10 +193,6 @@ class _item(object):
         )
 
 
-def validate_int(value):
-    return int(value)
-
-
 def validate_bool(value):
     if value in (0, 1):
         return (False, True)[value]
@@ -218,7 +215,7 @@ def validate_file(value):
 
 
 _VALIDATE_MAP = {
-    'int': validate_int,
+    'int': int,
     'bool': validate_bool,
     'file': validate_file,
 }

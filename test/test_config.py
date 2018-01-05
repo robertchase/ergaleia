@@ -3,25 +3,6 @@ import ergaleia.config as config
 
 
 @pytest.mark.parametrize('value,expected', [
-    (0, 0),
-    (1, 1),
-    (-1, -1),
-    (5, 5),
-    ('0', 0),
-    ('1', 1),
-    ('-1', -1),
-    ('5', 5),
-])
-def test_validate_int(value, expected):
-    assert config.validate_int(value) == expected
-
-
-def test_validate_int_error():
-    with pytest.raises(ValueError):
-        config.validate_int('wrong')
-
-
-@pytest.mark.parametrize('value,expected', [
     (0, False),
     (1, True),
     (True, True),
@@ -62,7 +43,7 @@ def test_set(cfg):
 
 
 def test_int(cfg):
-    cfg._define('foo', value=0, validator=config.validate_int)
+    cfg._define('foo', value=0, validator=int)
     cfg._set('foo', '100')
     assert cfg.foo == 100
     with pytest.raises(ValueError):
