@@ -119,10 +119,12 @@ class Token(object):
 
     @property
     def value(self):
-        try:
-            return int(self._value)
-        except ValueError:
-            return self._value
+        if not self.is_string:
+            try:
+                return int(self._value)
+            except ValueError:
+                pass
+        return self._value
 
     def add(self, atom):
         if self.is_new:
