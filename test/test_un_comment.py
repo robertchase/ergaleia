@@ -14,6 +14,9 @@ from ergaleia.un_comment import un_comment
     ('\b\o#o', '\b\o'),
     ('\b\o\#o', '\b\o#o'),
     ('\b\o\##o', '\b\o#'),
+    (['a', 'b'], ['a', 'b']),
+    (('a', 'b'), ['a', 'b']),
+    (('a#1', '#b'), ['a', '']),
 ])
 def test_un_comment(value, expected):
     assert un_comment(value) == expected
