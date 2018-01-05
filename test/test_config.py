@@ -91,9 +91,21 @@ def test_define_from_file():
     assert c.foobar is None
 
 
-def test_repr(cfg):
-    assert str(cfg) == 'foo=bar'
-    cfg._define('akk', '100')
-    assert str(cfg) == 'foo=bar\nakk=100'
-    cfg._define('foo', 'something else')
-    assert str(cfg) == 'foo=something else\nakk=100'
+@pytest.mark.parametrize('value,expected', [
+    (['foo 10', 'bar 20'], 'foo=10\nbar=20'),
+    (['foo.bar 10', 'bar 20'], 'foo.bar=10\nbar=20'),
+    (['foo', 'bar'], 'foo=\nbar='),
+])
+def test_repr(value, expected):
+    cfg = config.Config(value)
+    assert str(cfg) == expected
+
+
+@pytest.mark.parametrize('value,expected', [
+    (['foo 10', 'bar 20'], {'foo': 10, 'bar': 20}),
+    (['foo.bar 10', 'bar 20'], {'foo.bar': 10, 'bar': 20}),
+    (['foo', 'bar'], {'foo': None, 'bar': None}),
+])
+def test_as_dict(value, expected):
+    cfg = config.Config(value)
+    assert cfg._as_dict() == expected

@@ -87,7 +87,7 @@ class Config(_branch):
     def __repr__(self):
         return '\n'.join(
             '{}={}'.format(
-                k, getattr(self, k) if getattr(self, k) is not None else ''
+                k, self._get(k) if self._get(k) is not None else ''
             ) for k in self.__dict__['_ordered_keys']
         )
 
@@ -155,6 +155,9 @@ class Config(_branch):
                 self._define(key)
             level, itemname = self.__lookup(key)
             level.get(itemname).load(val)
+
+    def _as_dict(self):
+        return {k: self._get(k) for k in self.__dict__['_ordered_keys']}
 
     def _get(self, name):
         level, itemname = self.__lookup(name)
