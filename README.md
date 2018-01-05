@@ -20,7 +20,7 @@ Tested with 2.7 and 3.6.
 
 ## config
 
-A pythonic configuration object that reads `key`=`value` settings from a text file.
+A pythonic configuration object that reads `key=value` settings from a text file.
 The text file is constrained to a set of valid keys, which can have
 default values if not present in a config file.
 

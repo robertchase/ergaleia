@@ -5,10 +5,10 @@ for managing configuration data.
 
 ## typical use case
 
-A `Config` object is typically used to manage configuration
+A `Config` object manages configuration
 data read from a set of `key=value` records in a file.
 The `Config` object is used to
-define and access the expected keys.
+define, load and access the expected keys.
 
 #### example
 
@@ -78,7 +78,7 @@ This example demonstrates several characteristics of a `Config`:
 ## defining an attribute
 
 An attribute can be defined in the `Config` constructor, or by making a call
-to the `_define` method. We'll start with the `_define` method:
+to the `_define` method. Here is the signature of the `_define` method:
 
 ```
 _define(self, name, value=None, validator=None, env=None)
@@ -181,12 +181,12 @@ a `file` or `list` object using the `_define_from_file` method or the
 #### definition statement
 
 A definition statement is a blank-delimited sequence
-of tokens that contains elements that would normally be passed to
+of tokens that contain elements that would normally be passed to
 the `_define` method. For instance, the following call to define:
 ```
 c._define('foo', value=10, validator=int, env='FOO')
 ```
-can be expressed with one of these definition statements:
+can be expressed with one of these equivalent definition statements:
 ```
 'foo' value=10 validator=int env='FOO'
 
@@ -211,14 +211,14 @@ _define_from_file(self, defn)
         defn - a file path, file name, file or list
 
     Notes:
-        1. A `file path` is a dot-separated file name that resolved
+        1. A 'file path' is a dot-separated file name that resolves
            to a file in the PYTHONPATH (See ergaleia.normalize_path).
-        2. A `file name` is an os-specific name of a file in the file
+        2. A 'file name' is an os-specific path to a file in the file
            system. It will be located relative the the working
            directory of the running python program.
-        3. A `file` is an object with a `readlines` method returning
+        3. A 'file' is an object with a 'readlines' method returning
            zero or more lines.
-        4. `validator` can be one of int, bool or file.
+        4. 'validator' can be one of int, bool or file.
 ```
 For instance:
 ```
