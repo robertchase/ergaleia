@@ -61,6 +61,12 @@ def test_load(cfg):
     assert cfg.foo == '123'
 
 
+def test_load_return(cfg):
+    result = cfg._load(['foo=123'])
+    assert isinstance(result, config.Config)
+    assert result.foo == '123'
+
+
 def test_load_relaxed():
     cfg = config.Config()
     cfg._load(['foo=123', 'foo=234', '#foo=345'], relaxed=True)
@@ -108,4 +114,4 @@ def test_repr(value, expected):
 ])
 def test_as_dict(value, expected):
     cfg = config.Config(value)
-    assert cfg._as_dict() == expected
+    assert cfg._as_dict == expected

@@ -87,9 +87,12 @@ class Config(_branch):
     def __repr__(self):
         return '\n'.join(
             '{}={}'.format(
-                k, self._get(k) if self._get(k) is not None else ''
-            ) for k in self.__dict__['_ordered_keys']
+                k, v if v is not None else ''
+            ) for k, v in self.__ordered()
         )
+
+    def __ordered(self):
+        return [(k, self._get(k)) for k in self.__dict__['_ordered_keys']]
 
     def __lookup(self, name):
         level = self
@@ -145,6 +148,27 @@ class Config(_branch):
                 )
 
     def _load(self, path='config', relaxed=False):
+        """ load key value pairs from a file
+
+            Parameters:
+                path    - path to configuration data (see Note 1)
+                relaxed - if True, define keys on the fly (see Note 2)
+
+            Return:
+                self
+
+            Notes:
+
+                1. The path can be:
+                    * an open file object with a readlines method
+                    * a dot delimited path to a file (see normalize_path)
+                    * an os-specific path to a file (relative to cwd)
+                    * an iterable of key=value strings
+
+                2. Normally keys read from the file must conform to keys
+                   previously defined for the Config. If the relaxed flag
+                   is True, any keys found in the file will be accepted.
+        """
         for line in un_comment(load_lines_from_path(path)):
             if not line:
                 continue
@@ -155,9 +179,11 @@ class Config(_branch):
                 self._define(key)
             level, itemname = self.__lookup(key)
             level.get(itemname).load(val)
+        return self
 
+    @property
     def _as_dict(self):
-        return {k: self._get(k) for k in self.__dict__['_ordered_keys']}
+        return {k: v for k, v in self.__ordered()}
 
     def _get(self, name):
         level, itemname = self.__lookup(name)
