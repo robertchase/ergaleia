@@ -202,7 +202,7 @@ class _item(object):
     def __setattr__(self, name, value):
         """ directly setting value does not respect env """
         validator = self.validator
-        if validator:
+        if value and validator:
             value = validator(value)
         self.__dict__['value'] = value
 
