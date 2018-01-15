@@ -42,6 +42,64 @@ def test_set(cfg):
     assert cfg.foo == 'whatever'
 
 
+@pytest.mark.parametrize('define,key,expect', [
+    ('foo bar', 'foo', 'bar'),
+    ('a.b 10', 'a.b', 10),
+    ('10 a', '10', 'a'),
+    ('10.20 a', '10.20', 'a'),
+    ('10.20 30', '10.20', 30),
+    ('a 1.2.3', 'a', '1.2.3'),
+])
+def test_get(define, key, expect):
+    c = config.Config([define])
+    assert c._get(key) == expect
+
+
+@pytest.mark.parametrize('define,key,expect', [
+    ('foo bar', 'foo', 'bar'),
+    ('a.b 10', 'a.b', 10),
+    ('10 a', '10', 'a'),
+    ('10.20 a', '10.20', 'a'),
+    ('10.20 30', '10.20', 30),
+    ('a 1.2.3', 'a', '1.2.3'),
+])
+def test_bracket(define, key, expect):
+    c = config.Config()
+    c._define_from_path([define])
+    access = ''.join("['{}']".format(k) for k in key.split('.'))
+    access = 'c{}'.format(access)
+    assert eval(access) == expect
+
+
+@pytest.mark.parametrize('define,key,expect', [
+    ('foo bar', 'foo', 'bar'),
+    ('a.b 10', 'a.b', 10),
+    ('a 1.2.3', 'a', '1.2.3'),
+])
+def test_dot(define, key, expect):
+    c = config.Config()
+    c._define_from_path([define])
+    v = eval('c.{}'.format(key))
+    assert v == expect
+
+
+@pytest.mark.parametrize('key', [
+    ('a.b.c.d',),
+    ('d.e.f',),
+    (10),
+])
+def test_get_fail(key):
+    c = config.Config()
+    with pytest.raises(KeyError):
+        c._get(key)
+
+
+def test_load_undefined():
+    c = config.Config()
+    with pytest.raises(KeyError):
+        c._load(['a=b'])
+
+
 def test_int(cfg):
     cfg._define('foo', value=0, validator=int)
     cfg._set('foo', '100')
@@ -85,9 +143,9 @@ def test_comment(value, expected, cfg):
     assert cfg.foo == expected
 
 
-def test_define_from_file():
+def test_define_from_path():
     c = config.Config()
-    c._define_from_file([
+    c._define_from_path([
         'foo value=bar',
         'bar value=10 validator=int',
         'foobar',

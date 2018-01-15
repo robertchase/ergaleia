@@ -20,8 +20,8 @@ c = config.Config()
 c._define('server.port', value=10000, validator=int)
 c._define('server.ssl', value=true, validator=config.validate_bool)
 
-# load data from file
-c._load('my_config)
+# load key=value data from file
+c._load('my_config')
 
 # use config
 setup_server(port=c.server.port, is_ssl=c.server.ssl)
@@ -175,7 +175,7 @@ ValueError: invalid literal for int() with base 10: 'bar'
 ## other ways to define an attribute
 
 A `Config` can also be defined by reading definition statements from
-a `file` or `list` object using the `_define_from_file` method or the
+a `file` or `list` object using the `_define_from_path` method or the
 `Config` constructor.
 
 #### definition statement
@@ -203,9 +203,9 @@ is composed of numeric characters [0-9]; otherwise, the value is `str`.
 It is only necessary to include quotes around a string if it contains
 blanks.
 
-#### using _define_from_file
+#### using _define_from_path
 ```
-_define_from_file(self, defn)
+_define_from_path(self, defn)
 
     Parameters:
         defn - a file path, file name, file or list
@@ -222,7 +222,7 @@ _define_from_file(self, defn)
 ```
 For instance:
 ```
-c._define_from_file([
+c._define_from_path([
     'server.port value=10000 validator=int',
     'server.ssl value=true, validator=bool',
 ])
@@ -237,4 +237,51 @@ c = Config([
     'server.port value=10000 validator=int',
     'server.ssl value=true, validator=bool',
 ])
+```
+
+## loading values from a config file
+
+A program using `Config` will manage the definition of valid
+fields, and allow a user to adjust those values by changing
+a config file.
+The definitions, whether loaded from a definition file or
+explicitly established with the `_define` method, are considered
+code, and are not manipulated in order to configure the
+operation of the program.
+
+User settings
+in a config file
+are `key=value` pairs, one per line.
+A `key` must match a defined config value, and a `value`
+must conform to any `validation` associated with the `key`.
+If a `key` has an `env` defined, and the environment variable
+of that name is set, then the environment variable will
+take precedence over the value read from the file.
+
+Use the `_load` method to read in any user settings from
+a file.
+
+```
+_load(self, path, relaxed=False)
+
+    Parameters:
+        path    - a file path, file name, file or list
+        relaxed - if True, define keys on the fly (see Note 4)
+
+    Return:
+        self
+
+    Notes:
+        1. A 'file path' is a dot-separated file name that resolves
+           to a file in the PYTHONPATH (See ergaleia.normalize_path).
+        2. A 'file name' is an os-specific path to a file in the file
+           system. It will be located relative the the working
+           directory of the running python program.
+        3. A 'file' is an object with a 'readlines' method returning
+           zero or more lines.
+        4. Normally, keys read from the path must conform to keys
+           previously defined for the Config. If the relaxed flag
+           is True, any keys found in the file will be accepted.
+           (The keys are automatically defined, with no `value`,
+           `validator` or `env` specified).
 ```

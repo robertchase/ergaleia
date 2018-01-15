@@ -82,7 +82,7 @@ class Config(_branch):
     def __init__(self, definition=None):
         self.__dict__['_ordered_keys'] = []
         if definition:
-            self._define_from_file(definition)
+            self._define_from_path(definition)
 
     def __repr__(self):
         return '\n'.join(
@@ -96,7 +96,7 @@ class Config(_branch):
 
     def __lookup(self, name):
         level = self
-        parts = name.split('.')
+        parts = str(name).split('.')
         parts, itemname = parts[:-1], parts[-1]
         for part in parts:
             level = level[part]
@@ -106,7 +106,7 @@ class Config(_branch):
         keys = self.__dict__['_ordered_keys']
         if name not in keys:
             keys.append(name)
-        parts = name.split('.')
+        parts = str(name).split('.')
         parts, itemname = parts[:-1], parts[-1]
         level = self
         for part in parts:
@@ -126,7 +126,7 @@ class Config(_branch):
         else:
             level.setdefault(itemname, _item(value, validator, env))
 
-    def _define_from_file(self, path):
+    def _define_from_path(self, path):
         data = un_comment(load_lines_from_path(path))
         for num, line in enumerate(data, start=1):
             if not line:
@@ -178,7 +178,10 @@ class Config(_branch):
             if relaxed:
                 self._define(key)
             level, itemname = self.__lookup(key)
-            level.get(itemname).load(val)
+            item = level.get(itemname)
+            if item is None:
+                raise KeyError(itemname)
+            item.load(val)
         return self
 
     @property
@@ -187,7 +190,10 @@ class Config(_branch):
 
     def _get(self, name):
         level, itemname = self.__lookup(name)
-        return level[itemname]
+        try:
+            return level[itemname]
+        except TypeError:
+            raise KeyError(itemname)
 
     def _set(self, name, value):
         level, itemname = self.__lookup(name)
@@ -248,3 +254,32 @@ _VALIDATE_MAP = {
     'bool': validate_bool,
     'file': validate_file,
 }
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='parse a config file',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        '-c', '--config',
+        type=argparse.FileType('r'),
+        help='configuration file'
+    )
+    parser.add_argument(
+        '-d', '--defn',
+        type=argparse.FileType('r'),
+        help='config definition file'
+    )
+    parser.add_argument(
+        '-r', '--relaxed', default=False, action='store_true',
+        help='accept all keys found in config file (define on the fly)'
+    )
+    args = parser.parse_args()
+
+    c = Config(args.defn)
+    if args.config:
+        c._load(args.config, relaxed=args.relaxed)
+    print(c)
