@@ -57,7 +57,7 @@ KeyError: 'foo'
 >>> c.foo
 'bar'
 
-# load a configuration file (a list for simplicity)
+# load a configuration file (a list for demonstration)
 >>> c._load(['foo=rab'])
 
 # and take a look
@@ -203,6 +203,8 @@ is composed of numeric characters [0-9]; otherwise, the value is `str`.
 It is only necessary to include quotes around a string if it contains
 blanks.
 
+Valid values for `validator` are one of int, bool or file.
+
 #### using _define_from_path
 ```
 _define_from_path(self, defn)
@@ -218,7 +220,6 @@ _define_from_path(self, defn)
            directory of the running python program.
         3. A 'file' is an object with a 'readlines' method returning
            zero or more lines.
-        4. 'validator' can be one of int, bool or file.
 ```
 For instance:
 ```
@@ -249,6 +250,11 @@ explicitly established with the `_define` method, are considered
 code, and are not manipulated in order to configure the
 operation of the program.
 
+*A **config file** is used to configure the operation of the program.*
+The default name for a `config file` is `config`, which is
+the name of a
+text file in the current working directory (See Note 2 below).
+
 User settings
 in a config file
 are `key=value` pairs, one per line.
@@ -262,7 +268,7 @@ Use the `_load` method to read in any user settings from
 a file.
 
 ```
-_load(self, path, relaxed=False)
+_load(self, path='config', relaxed=False)
 
     Parameters:
         path    - a file path, file name, file or list
@@ -285,3 +291,43 @@ _load(self, path, relaxed=False)
            (The keys are automatically defined, with no `value`,
            `validator` or `env` specified).
 ```
+
+## other ways to get and set data
+
+#### using _get
+
+Dot or bracket notation is the typical way to access values in a `Config`.
+The `_get` method allows a single-call alternative that can be useful
+in certain cases. The following access calls:
+```
+c.a.b.c
+c['a']['b']['c']
+```
+can also be performed with the `_get` method:
+```
+c._get('a.b.c')
+```
+If the `key`, in this case `a.b.c`, is stored in a variable,
+the `_get` method allows you to directly access a value without having
+to break the variable into it's component parts and loop through each access.
+
+
+#### using _set
+
+The `_load` method is the typical way to acces values in a `Config`.
+Dot and bracket notation are also available.
+The `_set` method allows a single-call alternative that can be useful
+in certain cases. The following set calls:
+```
+c.a.b.c = 10
+c['a']['b']['c'] = 10
+```
+can also be performed with the `_set` method:
+```
+c._set('a.b.c', 10)
+```
+
+#### using _as_dict
+
+The `_as_dict` property is a one-level dict with each
+defined key of the `Config` paired with the corresponding value.
