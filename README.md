@@ -34,6 +34,12 @@ So, why did *they* invent `XML` again?
 
 [from_xml documentation](doc/from_xml.md)
 
+## import_by_path
+
+A function loader that locates and dynamically loads functions using dotted-path notation.
+
+[import_by_path documentation](doc/import_by_path.md)
+
 ## load_from_path
 
 A pair of file loader functions that can find, and load, files in pythonic ways.
