@@ -314,7 +314,7 @@ to break the variable into it's component parts and loop through each access.
 
 #### using _set
 
-The `_load` method is the typical way to acces values in a `Config`.
+The `_load` method is the typical way to set values in a `Config`.
 Dot and bracket notation are also available.
 The `_set` method allows a single-call alternative that can be useful
 in certain cases. The following set calls:
@@ -330,4 +330,4 @@ c._set('a.b.c', 10)
 #### using _as_dict
 
 The `_as_dict` property is a one-level dict with each
-defined key of the `Config` paired with the corresponding value.
+defined key in the `Config` paired with the corresponding value.
