@@ -24,6 +24,10 @@ def test_load_lines_from_path_list():
     assert load_from_path.load_lines_from_path(['one', 'two']) == ['one', 'two']
 
 
+def test_load_from_path_list():
+    assert load_from_path.load_from_path(['one', 'two']) == ['one', 'two']
+
+
 def test_load_from_path_file():
     assert load_from_path.load_from_path(
             'test.load_from_path.data', 'data'

@@ -24,9 +24,10 @@ def load_from_path(path, filetype=None):
                case in Note 1).
     """
     if not isinstance(path, str):
-        if hasattr(path, 'read'):
+        try:
             return path.read()
-        return path
+        except AttributeError:
+            return path
     path = normalize_path(path, filetype)
     with open(path) as data:
         return data.read()
@@ -50,9 +51,10 @@ def load_lines_from_path(path, filetype=None):
                case in Note 1).
     """
     if not isinstance(path, str):
-        if hasattr(path, 'readlines'):
+        try:
             return path.readlines()
-        return path
+        except AttributeError:
+            return path
     path = normalize_path(path, filetype)
     with open(path) as data:
         return data.readlines()
