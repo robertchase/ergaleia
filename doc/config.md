@@ -260,7 +260,7 @@ operation of the program.
 *A **config file** is used to configure the operation of the program.*
 The default name for a `config file` is `config`, which is
 the name of a
-text file in the current working directory (See Note 2 below).
+text file in the current working directory (See Note 3 below).
 
 User settings
 in a config file
@@ -280,7 +280,7 @@ _load(self, path='config', filetype=None, relaxed=False)
     Parameters:
         path     - a file path, file name, file or list
         filetype - type component of dot-delimited path
-        relaxed  - if True, define keys on the fly (see Note 4)
+        relaxed  - if True, define keys on the fly (see Note 5)
 
     Return:
         self
