@@ -207,18 +207,22 @@ Valid values for `validator` are one of int, bool or file.
 
 #### using _define_from_path
 ```
-_define_from_path(self, defn)
+_define_from_path(self, defn, filetype=None)
 
     Parameters:
-        defn - a file path, file name, file or list
+        defn     - a file path, file name, file or list
+        filetype - type component of dot-delimited path
 
     Notes:
         1. A 'file path' is a dot-separated file name that resolves
            to a file in the PYTHONPATH (See ergaleia.normalize_path).
-        2. A 'file name' is an os-specific path to a file in the file
+        2. If 'file path' is used, the last dot-delimited token might
+           represent a file-type. This can be indicated with the
+           'filetype' argument.
+        3. A 'file name' is an os-specific path to a file in the file
            system. It will be located relative the the working
            directory of the running python program.
-        3. A 'file' is an object with a 'readlines' method returning
+        4. A 'file' is an object with a 'readlines' method returning
            zero or more lines.
 ```
 For instance:
@@ -239,6 +243,9 @@ c = Config([
     'server.ssl value=true, validator=bool',
 ])
 ```
+
+The `Config` constructor takes the same arguments as the
+`_define_from_path` method.
 
 ## loading values from a config file
 
@@ -268,11 +275,12 @@ Use the `_load` method to read in any user settings from
 a file.
 
 ```
-_load(self, path='config', relaxed=False)
+_load(self, path='config', filetype=None, relaxed=False)
 
     Parameters:
-        path    - a file path, file name, file or list
-        relaxed - if True, define keys on the fly (see Note 4)
+        path     - a file path, file name, file or list
+        filetype - type component of dot-delimited path
+        relaxed  - if True, define keys on the fly (see Note 4)
 
     Return:
         self
@@ -280,12 +288,15 @@ _load(self, path='config', relaxed=False)
     Notes:
         1. A 'file path' is a dot-separated file name that resolves
            to a file in the PYTHONPATH (See ergaleia.normalize_path).
-        2. A 'file name' is an os-specific path to a file in the file
+        2. If 'file path' is used, the last dot-delimited token might
+           represent a file-type. This can be indicated with the
+           'filetype' argument.
+        3. A 'file name' is an os-specific path to a file in the file
            system. It will be located relative the the working
            directory of the running python program.
-        3. A 'file' is an object with a 'readlines' method returning
+        4. A 'file' is an object with a 'readlines' method returning
            zero or more lines.
-        4. Normally, keys read from the path must conform to keys
+        5. Normally, keys read from the path must conform to keys
            previously defined for the Config. If the relaxed flag
            is True, any keys found in the file will be accepted.
            (The keys are automatically defined, with no `value`,

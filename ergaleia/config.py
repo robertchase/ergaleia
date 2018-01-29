@@ -79,10 +79,10 @@ class Config(_branch):
          method. Values which are directly set override env.
     """
 
-    def __init__(self, definition=None):
+    def __init__(self, definition=None, filetype=None):
         self.__dict__['_ordered_keys'] = []
         if definition:
-            self._define_from_path(definition)
+            self._define_from_path(definition, filetype)
 
     def __repr__(self):
         return '\n'.join(
@@ -126,8 +126,8 @@ class Config(_branch):
         else:
             level.setdefault(itemname, _item(value, validator, env))
 
-    def _define_from_path(self, path):
-        data = un_comment(load_lines_from_path(path))
+    def _define_from_path(self, path, filetype=None):
+        data = un_comment(load_lines_from_path(path, filetype))
         for num, line in enumerate(data, start=1):
             if not line:
                 continue
@@ -147,12 +147,13 @@ class Config(_branch):
                     'Error on line {} of definition: {}'.format(num, e)
                 )
 
-    def _load(self, path='config', relaxed=False):
+    def _load(self, path='config', filetype=None, relaxed=False):
         """ load key value pairs from a file
 
             Parameters:
-                path    - path to configuration data (see Note 1)
-                relaxed - if True, define keys on the fly (see Note 2)
+                path     - path to configuration data (see Note 1)
+                filetype - type component of dot-delimited path
+                relaxed  - if True, define keys on the fly (see Note 2)
 
             Return:
                 self
@@ -169,7 +170,7 @@ class Config(_branch):
                    previously defined for the Config. If the relaxed flag
                    is True, any keys found in the file will be accepted.
         """
-        for line in un_comment(load_lines_from_path(path)):
+        for line in un_comment(load_lines_from_path(path, filetype)):
             if not line:
                 continue
             key, val = line.split('=', 1)
