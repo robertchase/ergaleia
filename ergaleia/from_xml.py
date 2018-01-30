@@ -47,8 +47,10 @@ class XmlToDict(ContentHandler):
 
 
 def from_xml(data, handler_class=XmlToDict):
+    if isinstance(data, str):
+        data = StringIO(data)
     handler = handler_class()
     p = make_parser()
     p.setContentHandler(handler)
-    p.parse(StringIO(str(data)))
+    p.parse(data)
     return handler.stack[0][1]

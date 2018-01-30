@@ -2,6 +2,8 @@ import pytest
 import xml
 
 from ergaleia.from_xml import from_xml
+from ergaleia.load_from_path import load_from_path
+from ergaleia.normalize_path import normalize_path
 
 
 def test_empty():
@@ -24,37 +26,12 @@ def test_simple(value, length, content):
     assert c == content
 
 
-def test_parts():
-    # --- document from comptechdoc.org
-    x = '''<?xml version="1.0"?>
-        <PARTS>
-           <TITLE>Computer Parts</TITLE>
-           <PART>
-              <ITEM>Motherboard</ITEM>
-              <MANUFACTURER>ASUS</MANUFACTURER>
-              <MODEL>P3B-F</MODEL>
-              <COST> 123.00</COST>
-           </PART>
-           <PART>
-              <ITEM>Video Card</ITEM>
-              <MANUFACTURER>ATI</MANUFACTURER>
-              <MODEL>All-in-Wonder Pro</MODEL>
-              <COST> 160.00</COST>
-           </PART>
-           <PART>
-              <ITEM>Sound Card</ITEM>
-              <MANUFACTURER>Creative Labs</MANUFACTURER>
-              <MODEL>Sound Blaster Live</MODEL>
-              <COST> 80.00</COST>
-           </PART>
-           <PART>
-              <ITEM>23 inch Monitor</ITEM>
-              <MANUFACTURER>LG Electronics</MANUFACTURER>
-              <MODEL> 995E</MODEL>
-              <COST> 290.00</COST>
-           </PART>
-        </PARTS>'''
-    d = from_xml(x)
+@pytest.mark.parametrize('data', [
+    (load_from_path('test.from_xml.data', 'data')),
+    (open(normalize_path('test.from_xml.data', 'data'))),
+])
+def test_parts(data):
+    d = from_xml(data)
 
     d = d['PARTS']
     assert 'TITLE' in d
