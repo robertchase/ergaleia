@@ -26,6 +26,10 @@ default values if not present in a config file.
 
 [config documentation](doc/config.md)
 
+A mini config object for managing settings within a module is also available.
+
+[mini documentation](doc/mini.md)
+
 ## from_xml
 
 A conversion tool to turn an `XML` document into a nested python dict.

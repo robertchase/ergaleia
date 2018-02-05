@@ -1,3 +1,4 @@
+from collections import namedtuple
 import os
 
 from ergaleia.load_from_path import load_lines_from_path
@@ -255,6 +256,40 @@ _VALIDATE_MAP = {
     'bool': validate_bool,
     'file': validate_file,
 }
+
+
+class Mini(object):
+    """ limited one-level config
+
+        Define field names (no dots) with string arguments to the constructor.
+
+        Set values in the normal way, or using kwargs to the set method.
+
+        Load values from a file with the load method.
+
+        Return a namedtuple of key-values with the as_tuple method.
+    """
+
+    def __init__(self, *args):
+        self.__dict__['conf'] = Config(args)
+
+    def __getattr__(self, name):
+        return self.conf[name]
+
+    def __setattr__(self, name, value):
+        self.__dict__['conf'][name] = value
+
+    def set(self, **kwargs):
+        for k, v in kwargs.items():
+            self.__dict__['conf'][k] = v
+
+    def load(self, path):
+        self.conf._load(path)
+
+    def as_tuple(self, name='MiniConfig'):
+        return namedtuple(name, self.conf._ordered_keys)(
+            **{n: self.conf._get(n) for n in self.conf._ordered_keys}
+        )
 
 
 if __name__ == '__main__':
