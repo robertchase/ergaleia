@@ -22,3 +22,4 @@ from_xml(data)
 
 >>> from_xml('<parent><child>fred</child><child>sally</child></parent>')
 {'parent': {'child': ['fred', 'sally']}}
+```
