@@ -14,8 +14,10 @@ import_by_path(path)
 
     Notes:
         1. The 'path' is searched relative to PYTHONPATH.
-        2. If 'path' is not a string, no function lookup is
-           performed.
+        2. If 'path' is not a string, no function lookup is performed, and
+           'path' will be returned unchanged.
+        3. If 'path' is incorrect a ModuleNotFoundError or
+           AttributeError will be raised.
 ```
 
 ## example
@@ -30,4 +32,14 @@ is not available at the time the code is written.
 >>> fn = import_by_path('ergaleia.import_by_path.import_by_path')
 >>> fn == import_by_path
 True
+
+>>> fnp = fn('ergaleia.import_by_path.import_by_path')
+>>> fnp == fn == import_by_path
+True
 ```
+
+## warning
+It is a **horrible** idea to dynamically load code based on `path` values
+from an untrusted source.
+
+**Never** allow users to supply arbitrary values for `path`.
