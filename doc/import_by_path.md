@@ -19,7 +19,7 @@ import_by_path(path)
 ```
 
 ## example
-This example is contrived, since there is not reason to dynamically
+This example is contrived, since there is not a reason to dynamically
 load `import_by_path`. This might be useful if the function `path`
 is supplied by some means, like a configuration file,
 such that the `path`
