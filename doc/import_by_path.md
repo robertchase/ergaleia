@@ -2,6 +2,10 @@
 
 Dynamically load a function using dotted-path notation.
 
+This might be useful if the function `path`
+is supplied by some means, like a configuration file,
+such that the `path`
+is not available at the time the code is written.
 ## usage
 ```
 import_by_path(path)
@@ -22,10 +26,7 @@ import_by_path(path)
 
 ## example
 This example is contrived, since there is not a reason to dynamically
-load `import_by_path`. This might be useful if the function `path`
-is supplied by some means, like a configuration file,
-such that the `path`
-is not available at the time the code is written.
+load `import_by_path`.
 ```
 >>> from ergaleia.import_by_path import import_by_path
 
