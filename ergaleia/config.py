@@ -171,19 +171,28 @@ class Config(_branch):
                    previously defined for the Config. If the relaxed flag
                    is True, any keys found in the file will be accepted.
         """
-        for line in un_comment(load_lines_from_path(path, filetype)):
+        for num, line in enumerate(
+                    un_comment(load_lines_from_path(path, filetype)),
+                    start=1,
+                ):
             if not line:
                 continue
-            key, val = line.split('=', 1)
-            key = key.strip()
-            val = val.strip()
-            if relaxed:
-                self._define(key)
-            level, itemname = self.__lookup(key)
-            item = level.get(itemname)
-            if item is None:
-                raise KeyError(itemname)
-            item.load(val)
+            try:
+                key, val = line.split('=', 1)
+                key = key.strip()
+                val = val.strip()
+                if relaxed:
+                    self._define(key)
+                level, itemname = self.__lookup(key)
+                item = level.get(itemname)
+                if item is None:
+                    raise KeyError(itemname)
+                item.load(val)
+            except Exception as e:
+                args = e.args or ('',)
+                msg = 'line {} of config: {}'. format(num, args[0])
+                e.args = (msg,) + args[1:]
+                raise
         return self
 
     @property
