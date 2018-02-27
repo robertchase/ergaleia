@@ -9,7 +9,7 @@ import sys
 PY3 = sys.version[0] == '3'
 
 if PY3:
-    import importlib
+    import importlib.util
 else:
     import imp
 
