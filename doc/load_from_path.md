@@ -23,6 +23,15 @@ load_from_path(path, filetype=None, has_filetype=True)
 
 ## example
 
+Using the file `test/load_from_path.data`, which contains:
+```
+one
+two
+three
+```
+
 ```
 >>> from ergaleia.load_from_path import load_from_path
+>>> load_from_path('test.load_from_path.data')
+'one\ntwo\nthree\n'
 ```
