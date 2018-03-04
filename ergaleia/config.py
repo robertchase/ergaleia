@@ -148,13 +148,14 @@ class Config(_branch):
                     'Error on line {} of definition: {}'.format(num, e)
                 )
 
-    def _load(self, path='config', filetype=None, relaxed=False):
+    def _load(self, path='config', filetype=None, relaxed=False, ignore=False):
         """ load key value pairs from a file
 
             Parameters:
                 path     - path to configuration data (see Note 1)
                 filetype - type component of dot-delimited path
                 relaxed  - if True, define keys on the fly (see Note 2)
+                ignore   - if True, ignore undefined keys in path
 
             Return:
                 self
@@ -183,7 +184,12 @@ class Config(_branch):
                 val = val.strip()
                 if relaxed:
                     self._define(key)
-                level, itemname = self.__lookup(key)
+                try:
+                    level, itemname = self.__lookup(key)
+                except KeyError:
+                    if ignore:
+                        continue
+                    raise
                 item = level.get(itemname)
                 if item is None:
                     raise KeyError(itemname)
