@@ -171,6 +171,8 @@ class Config(_branch):
                 2. Normally keys read from the file must conform to keys
                    previously defined for the Config. If the relaxed flag
                    is True, any keys found in the file will be accepted.
+                   If the ignore flag is True, and kyes found in the file
+                   that are not previously defined are ignored.
         """
         for num, line in enumerate(
                     un_comment(load_lines_from_path(path, filetype)),

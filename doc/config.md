@@ -281,6 +281,7 @@ _load(self, path='config', filetype=None, relaxed=False)
         path     - a file path, file name, file or list
         filetype - type component of dot-delimited path
         relaxed  - if True, define keys on the fly (see Note 5)
+        ignore   - if True, ignore undefined keys in path
 
     Return:
         self
@@ -300,7 +301,9 @@ _load(self, path='config', filetype=None, relaxed=False)
            previously defined for the Config. If the relaxed flag
            is True, any keys found in the file will be accepted.
            (The keys are automatically defined, with no `value`,
-           `validator` or `env` specified).
+           `validator` or `env` specified). If the ignore flag is
+           True, any keys found in the file that are not previously
+           defined are ignored.
 ```
 
 ## other ways to get and set data
