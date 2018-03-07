@@ -11,8 +11,11 @@ def data():
 @pytest.mark.parametrize('keys,expected', [
     (('a',), {'b': {'c': 10}}),
     (('a', 'b'), {'c': 10}),
+    (('a.b'), {'c': 10}),
     (('a', 'b', 'c'), 10),
+    (('a.b.c'), 10),
     (('a', 'b', 'c', 'd'), None),
+    (('a.b.c.d'), None),
 ])
 def test_basic(data, keys, expected):
     assert nested_get(data, keys) == expected
@@ -21,8 +24,11 @@ def test_basic(data, keys, expected):
 @pytest.mark.parametrize('keys,expected', [
     (('a',), {'b': {'c': 10}}),
     (('a', 'b'), {'c': 10}),
+    (('a.b'), {'c': 10}),
     (('a', 'b', 'c'), 10),
+    (('a.b.c'), 10),
     (('a', 'b', 'c', 'd'), 'hey'),
+    (('a.b.c.d'), 'hey'),
 ])
 def test_default(data, keys, expected):
     assert nested_get(data, keys, default='hey') == expected
@@ -40,7 +46,9 @@ def test_required_typeerror(data):
 
 def test_as_list(data):
     assert nested_get(data, ('a', 'b', 'c'), as_list=True) == [10]
+    assert nested_get(data, ('a.b.c'), as_list=True) == [10]
     assert nested_get(data, ('a', 'b'), as_list=True) == [{'c': 10}]
+    assert nested_get(data, ('a.b'), as_list=True) == [{'c': 10}]
 
 
 def test_as_list_default(data):
