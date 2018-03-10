@@ -3,7 +3,7 @@ import pytest
 from ergaleia.import_by_path import import_by_path
 
 
-IMPORT = 'test.import_by_path_data'
+IMPORT = 'tests.import_by_path_data'
 
 
 def test_a():

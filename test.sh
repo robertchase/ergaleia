@@ -13,7 +13,7 @@
 TEST_GIT=${TEST_GIT:-$HOME/git}
 TEST_IMAGE=${TEST_IMAGE:-bob/python3.6}
 
-CMD=${*:-test}
+CMD=${*:-tests}
 GIT=/opt/git
 
 docker run --rm -v=$TEST_GIT:$GIT -w $GIT/ergaleia -e PYTHONPATH=$GIT/ergaleia $TEST_IMAGE pytest $CMD

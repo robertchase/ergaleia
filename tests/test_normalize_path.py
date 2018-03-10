@@ -8,7 +8,7 @@ BASE = os.path.sep.join(__file__.split(os.path.sep)[:-2])
 
 
 @pytest.mark.parametrize('path,filetype,has_filetype,expected', [
-    ('test.b.c.d', None, True, 'test/b/c.d'),
+    ('tests.b.c.d', None, True, 'tests/b/c.d'),
 ])
 def test_normalize_path(path, filetype, has_filetype, expected):
     assert normalize_path(path, filetype, has_filetype) == \
@@ -16,13 +16,13 @@ def test_normalize_path(path, filetype, has_filetype, expected):
 
 
 def test_normalize_path_with_filetype():
-    assert normalize_path('test.load_from_path.data', 'data') == \
-        os.path.sep.join((BASE, 'test/load_from_path.data'))
+    assert normalize_path('tests.load_from_path.data', 'data') == \
+        os.path.sep.join((BASE, 'tests/load_from_path.data'))
 
 
 def test_normalize_os_path():
-    assert normalize_path('test/load_from_path.data', 'data') == \
-        'test/load_from_path.data'
+    assert normalize_path('tests/load_from_path.data', 'data') == \
+        'tests/load_from_path.data'
 
 
 def test_normalize_non_string_path():

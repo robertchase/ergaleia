@@ -27,8 +27,8 @@ def test_simple(value, length, content):
 
 
 @pytest.mark.parametrize('data', [
-    (load_from_path('test.from_xml.data', 'data')),
-    (open(normalize_path('test.from_xml.data', 'data'))),
+    (load_from_path('tests.from_xml.data', 'data')),
+    (open(normalize_path('tests.from_xml.data', 'data'))),
 ])
 def test_parts(data):
     d = from_xml(data)
