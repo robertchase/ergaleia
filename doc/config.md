@@ -86,8 +86,17 @@ _define(self, name, value=None, validator=None, env=None)
 Parameters:
     name      - name of the attribute
     value     - initial value of the attribute
-    validator - validator callable
+    validator - validator callable (see Note 1)
     env       - enviromment variable for default/config override
+
+Notes:
+    1. the validator validates and optionally transforms the
+       attribute:
+
+           config.attribute = validate(new_value)
+
+       if the validator does not throw an exception, the
+       new_value is considered valid
 ```
 
 #### simple attribute
@@ -203,7 +212,10 @@ is composed of numeric characters [0-9]; otherwise, the value is `str`.
 It is only necessary to include quotes around a string if it contains
 blanks.
 
-Valid values for `validator` are one of int, bool or file.
+Valid values for `validator` are one of int, bool or file. If
+`validator` is not one of these values, it is assumed to be a
+dot-delimited string which can be resolved to a function using
+`import_by_path`.
 
 #### using _define_from_path
 ```

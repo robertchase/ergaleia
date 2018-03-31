@@ -1,6 +1,7 @@
 from collections import namedtuple
 import os
 
+from ergaleia.import_by_path import import_by_path
 from ergaleia.load_from_path import load_lines_from_path
 from ergaleia.to_args import to_args
 from ergaleia.un_comment import un_comment
@@ -139,9 +140,12 @@ class Config(_branch):
                     try:
                         kwargs['validator'] = _VALIDATE_MAP[validator]
                     except KeyError:
-                        raise Exception(
-                            'Invalid validator: {}'.format(validator)
-                        )
+                        try:
+                            kwargs['validator'] = import_by_path(validator)
+                        except Exception:
+                            raise Exception(
+                                'Invalid validator: {}'.format(validator)
+                            )
                 self._define(*args, **kwargs)
             except Exception as e:
                 raise Exception(

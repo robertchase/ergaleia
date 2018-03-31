@@ -155,6 +155,20 @@ def test_define_from_path():
     assert c.foobar is None
 
 
+def double(string):
+    return string + string
+
+
+def test_define_from_path_dynamic():
+    c = config.Config()
+    c._define_from_path([
+        'foo value=bar validator=tests.test_config.double',
+    ])
+    assert c.foo == 'barbar'
+    c.foo = 'akk'
+    assert c.foo == 'akkakk'
+
+
 @pytest.mark.parametrize('value,expected', [
     (['foo 10', 'bar 20'], 'foo=10\nbar=20'),
     (['foo.bar 10', 'bar 20'], 'foo.bar=10\nbar=20'),
