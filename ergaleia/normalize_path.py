@@ -57,7 +57,7 @@ def normalize_path(path, filetype=None, has_filetype=True):
             if len(parts) > 1:
                 if PY3:
                     spec = importlib.util.find_spec(parts[0])
-                    path = spec.submodule_search_locations[0]
+                    path = list(spec.submodule_search_locations)[0]
                 else:
                     _, path, _ = imp.find_module(parts[0])
 
