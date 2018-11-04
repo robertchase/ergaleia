@@ -4,7 +4,7 @@ import ergaleia.config as config
 
 @pytest.fixture
 def mini():
-    return config.Mini(['foo value=bar'])
+    return config.Mini('foo value=bar')
 
 
 def test_default(mini):
