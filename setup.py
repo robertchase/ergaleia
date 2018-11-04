@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name='ergaleia',
-    version='1.3.0',
+    version='1.3.1',
     packages=find_packages(exclude=['tests']),
     description='A library of random tools',
     long_description="""
