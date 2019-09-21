@@ -1,10 +1,10 @@
 import pytest
-import ergaleia.config as config
+from ergaleia import Mini
 
 
 @pytest.fixture
 def mini():
-    return config.Mini('foo value=bar')
+    return Mini('foo value=bar')
 
 
 def test_default(mini):
@@ -25,7 +25,7 @@ def test_set(mini):
     assert mini.foo == 1
     with pytest.raises(KeyError):
         mini.set(bar=2)
-    m = config.Mini('a', 'b', 'c')
+    m = Mini('a', 'b', 'c')
     m.set(a=1, b=2, c=3)
     assert m.a + m.b + m.c == 6
 
@@ -33,7 +33,7 @@ def test_set(mini):
 def test_load(mini):
     mini.load(['foo=10'])
     assert mini.foo == '10'
-    m = config.Mini('a validator=int')
+    m = Mini('a validator=int')
     m.load(['a=10'])
     assert m.a == 10
 

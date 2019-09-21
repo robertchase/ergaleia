@@ -15,7 +15,7 @@ from_xml(data)
 
 ## example
 ```
->>> from ergaleia.from_xml import from_xml
+>>> from ergaleia import from_xml
 
 >>> from_xml('<A>1</A>')
 {'A': '1'}

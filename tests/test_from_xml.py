@@ -1,9 +1,9 @@
 import pytest
 import xml
 
-from ergaleia.from_xml import from_xml
-from ergaleia.load_from_path import load_from_path
-from ergaleia.normalize_path import normalize_path
+from ergaleia import from_xml
+from ergaleia import load_from_path
+from ergaleia import normalize_path
 
 
 def test_empty():

@@ -1,5 +1,5 @@
 import pytest
-import ergaleia.config as config
+from ergaleia import Config, validate_bool
 
 
 @pytest.mark.parametrize('value,expected', [
@@ -15,7 +15,7 @@ import ergaleia.config as config
     ('FaLsE', False),
 ])
 def test_validate_bool(value, expected):
-    assert config.validate_bool(value) == expected
+    assert validate_bool(value) == expected
 
 
 @pytest.mark.parametrize('value', [
@@ -24,12 +24,12 @@ def test_validate_bool(value, expected):
 ])
 def test_validate_bool_error(value):
     with pytest.raises(ValueError):
-        config.validate_bool(value)
+        validate_bool(value)
 
 
 @pytest.fixture
 def cfg():
-    return config.Config(['foo value=bar'])
+    return Config(['foo value=bar'])
 
 
 def test_default(cfg):
@@ -51,7 +51,7 @@ def test_set(cfg):
     ('a 1.2.3', 'a', '1.2.3'),
 ])
 def test_get(define, key, expect):
-    c = config.Config([define])
+    c = Config([define])
     assert c._get(key) == expect
 
 
@@ -64,7 +64,7 @@ def test_get(define, key, expect):
     ('a 1.2.3', 'a', '1.2.3'),
 ])
 def test_bracket(define, key, expect):
-    c = config.Config()
+    c = Config()
     c._define_from_path([define])
     access = ''.join("['{}']".format(k) for k in key.split('.'))
     access = 'c{}'.format(access)
@@ -77,7 +77,7 @@ def test_bracket(define, key, expect):
     ('a 1.2.3', 'a', '1.2.3'),
 ])
 def test_dot(define, key, expect):
-    c = config.Config()
+    c = Config()
     c._define_from_path([define])
     v = eval('c.{}'.format(key))
     assert v == expect
@@ -89,13 +89,13 @@ def test_dot(define, key, expect):
     (10),
 ])
 def test_get_fail(key):
-    c = config.Config()
+    c = Config()
     with pytest.raises(KeyError):
         c._get(key)
 
 
 def test_load_undefined():
-    c = config.Config()
+    c = Config()
     with pytest.raises(KeyError):
         c._load(['a=b'])
 
@@ -121,12 +121,12 @@ def test_load(cfg):
 
 def test_load_return(cfg):
     result = cfg._load(['foo=123'])
-    assert isinstance(result, config.Config)
+    assert isinstance(result, Config)
     assert result.foo == '123'
 
 
 def test_load_relaxed():
-    cfg = config.Config()
+    cfg = Config()
     cfg._load(['foo=123', 'foo=234', '#foo=345'], relaxed=True)
     assert cfg.foo == '234'
 
@@ -134,7 +134,7 @@ def test_load_relaxed():
 @pytest.mark.parametrize('value,expected', [
     (['foo=test', '#foo=comment'], 'test'),
     (['foo=test#etc'], 'test'),
-    (['foo=test\#etc'], 'test#etc'),
+    (['foo=test\#etc'], 'test#etc'),  # noqa: W605
     (['#foo=test'], 'bar'),
     (['#foo=#test'], 'bar'),
 ])
@@ -144,7 +144,7 @@ def test_comment(value, expected, cfg):
 
 
 def test_define_from_path():
-    c = config.Config()
+    c = Config()
     c._define_from_path([
         'foo value=bar',
         'bar value=10 validator=int',
@@ -160,7 +160,7 @@ def double(string):
 
 
 def test_define_from_path_dynamic():
-    c = config.Config()
+    c = Config()
     c._define_from_path([
         'foo value=bar validator=tests.test_config.double',
     ])
@@ -175,7 +175,7 @@ def test_define_from_path_dynamic():
     (['foo', 'bar'], 'foo=\nbar='),
 ])
 def test_repr(value, expected):
-    cfg = config.Config(value)
+    cfg = Config(value)
     assert str(cfg) == expected
 
 
@@ -185,5 +185,5 @@ def test_repr(value, expected):
     (['foo', 'bar'], {'foo': None, 'bar': None}),
 ])
 def test_as_dict(value, expected):
-    cfg = config.Config(value)
+    cfg = Config(value)
     assert cfg._as_dict == expected

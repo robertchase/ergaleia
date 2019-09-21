@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from ergaleia.normalize_path import normalize_path
+from ergaleia import normalize_path
 
 
 BASE = os.path.sep.join(__file__.split(os.path.sep)[:-2])

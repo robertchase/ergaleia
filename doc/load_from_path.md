@@ -31,7 +31,7 @@ three
 ```
 
 ```
->>> from ergaleia.load_from_path import load_from_path
+>>> from ergaleia import load_from_path
 >>> load_from_path('test.load_from_path.data')
 'one\ntwo\nthree\n'
 ```

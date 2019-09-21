@@ -28,7 +28,7 @@ import_by_path(path)
 This example is contrived, since there is not a reason to dynamically
 load `import_by_path`.
 ```
->>> from ergaleia.import_by_path import import_by_path
+>>> from ergaleia import import_by_path
 
 >>> fn = import_by_path('ergaleia.import_by_path.import_by_path')
 >>> fn == import_by_path

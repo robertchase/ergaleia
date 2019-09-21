@@ -1,5 +1,5 @@
 import pytest
-from ergaleia.un_comment import un_comment
+from ergaleia import un_comment
 
 
 @pytest.mark.parametrize('value,expected', [

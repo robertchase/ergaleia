@@ -32,7 +32,7 @@ def to_args(s):
 
             1. Does not enforce args and keywords as valid python.
 
-            2. String delimiters can be escaped (\) within strings.
+            2. String delimiters can be escaped (backslash) within strings.
 
             3. Key-value delimiters (=) can be surrounded by blanks.
 

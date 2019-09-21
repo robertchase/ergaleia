@@ -1,5 +1,12 @@
 import pytest
-import ergaleia.to_args as to_args
+from ergaleia import to_args
+from ergaleia import InvalidStartCharacter
+from ergaleia import ConsecutiveEqual
+from ergaleia import UnexpectedCharacter
+from ergaleia import ExpectingKey
+from ergaleia import DuplicateKey
+from ergaleia import ConsecutiveKeys
+from ergaleia import IncompleteKeyValue
 
 
 @pytest.mark.parametrize('value,args_expected,kwargs_expected', [
@@ -15,7 +22,7 @@ import ergaleia.to_args as to_args
     ('a b c d=f g=h', ['a', 'b', 'c'], {'d': 'f', 'g': 'h'}),
 ])
 def test_to_args(value, args_expected, kwargs_expected):
-    args, kwargs = to_args.to_args(value)
+    args, kwargs = to_args(value)
     assert len(args) == len(args_expected)
     for a, b in zip(args, args_expected):
         assert a == b
@@ -25,23 +32,23 @@ def test_to_args(value, args_expected, kwargs_expected):
 
 
 def test_numeric_value():
-    args, kwargs = to_args.to_args("a=10 b='20'")
+    args, kwargs = to_args("a=10 b='20'")
     assert kwargs['a'] == 10
     assert kwargs['b'] == '20'
 
 
 @pytest.mark.parametrize('value,expected', [
-    ('=', to_args.InvalidStartCharacter),
-    ('a==', to_args.ConsecutiveEqual),
-    ('a=b c', to_args.ExpectingKey),
-    ('abc\\def', to_args.UnexpectedCharacter),
-    ('abc"def', to_args.UnexpectedCharacter),
-    ('abc\'def', to_args.UnexpectedCharacter),
-    ('a=b c', to_args.ExpectingKey),
-    ('a=b a=', to_args.DuplicateKey),
-    ('a=b=', to_args.ConsecutiveKeys),
-    ('a=', to_args.IncompleteKeyValue),
+    ('=', InvalidStartCharacter),
+    ('a==', ConsecutiveEqual),
+    ('a=b c', ExpectingKey),
+    ('abc\\def', UnexpectedCharacter),
+    ('abc"def', UnexpectedCharacter),
+    ('abc\'def', UnexpectedCharacter),
+    ('a=b c', ExpectingKey),
+    ('a=b a=', DuplicateKey),
+    ('a=b=', ConsecutiveKeys),
+    ('a=', IncompleteKeyValue),
 ])
 def test_to_args_errors(value, expected):
     with pytest.raises(expected):
-        to_args.to_args(value)
+        to_args(value)

@@ -12,10 +12,10 @@ not be used in a field name.
 #### example
 
 ```
-import ergaleia.config as config
+from ergaleia import Mini
 
 # define Mini with three fields
-m = config.Mini('a', 'b', 'c')
+m = Mini('a', 'b', 'c')
 
 # set values
 m.set(a=10, b=20, c='whatever')

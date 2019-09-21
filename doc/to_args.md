@@ -49,7 +49,7 @@ a='b'
 
 #### bringing it all together
 ```
->>> from ergaleia.to_args import to_args
+>>> from ergaleia import to_args
 >>> args, kwargs = to_args('a b 123 "c d"=10 e="20"')
 >>> args
 ['a', 'b', 123]

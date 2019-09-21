@@ -13,10 +13,10 @@ define, load and access the expected keys.
 #### example
 
 ```
-import ergaleia.config as config
+from ergaleia import Config
 
 # define config
-c = config.Config()
+c = Config()
 c._define('server.port', value=10000, validator=int)
 c._define('server.ssl', value=true, validator=config.validate_bool)
 
@@ -36,9 +36,9 @@ to a defined structure.
 #### a simple demonstration
 
 ```
->>> import ergaleia.config as config
+>>> from ergaleia import config
 
->>> c = config.Config()
+>>> c = Config()
 
 # try to access an attribute
 >>> c.foo

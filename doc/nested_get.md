@@ -36,7 +36,7 @@ Notes:
 ```
  ## example
 ```
->>> from ergaleia.nested_get import nested_get
+>>> from ergaleia import nested_get
 >>> d = {'a':{'b':{'c':1}}}
 >>> d
 {'a': {'b': {'c': 1}}}

@@ -1,6 +1,6 @@
 import pytest
 
-from ergaleia.import_by_path import import_by_path
+from ergaleia import import_by_path
 
 
 IMPORT = 'tests.import_by_path_data'
