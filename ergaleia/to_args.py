@@ -164,7 +164,7 @@ class Token(object):
             return 'done'
         if atom.is_equal:
             return 'equal'
-        if atom.is_escape or atom.is_string:
+        if atom.is_string:
             return 'invalid'
         self._value += atom.c
 

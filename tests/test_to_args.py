@@ -20,6 +20,8 @@ from ergaleia import IncompleteKeyValue
     ('a =b c=d', [], {'a': 'b', 'c': 'd'}),
     ('a   =\tb c=d', [], {'a': 'b', 'c': 'd'}),
     ('a b c d=f g=h', ['a', 'b', 'c'], {'d': 'f', 'g': 'h'}),
+
+    (r'a\b', [r'a\b'], {}),
 ])
 def test_to_args(value, args_expected, kwargs_expected):
     args, kwargs = to_args(value)
@@ -41,9 +43,9 @@ def test_numeric_value():
     ('=', InvalidStartCharacter),
     ('a==', ConsecutiveEqual),
     ('a=b c', ExpectingKey),
-    ('abc\\def', UnexpectedCharacter),
     ('abc"def', UnexpectedCharacter),
-    ('abc\'def', UnexpectedCharacter),
+    (r'abc\"def', UnexpectedCharacter),
+    (r"abc\'def", UnexpectedCharacter),
     ('a=b c', ExpectingKey),
     ('a=b a=', DuplicateKey),
     ('a=b=', ConsecutiveKeys),

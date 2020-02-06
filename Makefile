@@ -1,6 +1,6 @@
-.PHONY: sh connect build test flake
+.PHONY: bash connect build test flake
 
-IMAGE := alpine-python
+IMAGE := base-python
 NAME := ergaleia
 NET := --net test
 GIT := $(HOME)/git
@@ -10,11 +10,11 @@ VOLUMES := -v=$(GIT):/opt/git
 
 DOCKER := docker run $(OPT) -it --rm  $(VOLUMES) $(WORKING) $(NET) -e PYTHONPATH=. --name $(NAME) $(IMAGE)
 
-sh:
-	$(DOCKER) /bin/sh
+bash:
+	$(DOCKER) /bin/bash
 
 connect:
-	docker exec -it $(NAME) sh
+	docker exec -it $(NAME) bash
 
 test:
 	$(DOCKER) pytest $(ARGS)
