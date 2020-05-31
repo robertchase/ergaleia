@@ -1,233 +1,99 @@
-'''
+"""
 The MIT License (MIT)
 
 https://github.com/robertchase/ergaleia/blob/master/LICENSE.txt
-'''
+"""
+import re
 
 
-def to_args(s):
-    """ parse a string into args and kwargs
+def to_args(line):
+    """Tokenize line into kwargs and ordered args
 
-        the input is a blank-delimited set of tokens, which may be grouped
-        as strings (tick or double tick delimited) with embedded blanks.
-        a non-string equal (=) acts as a delimiter between key-value pairs.
+         The input is a blank-delimited set of tokens, which may be grouped
+         as strings (quote or double quote delimited) with embedded blanks.
+         A non-string equal (=) acts as a delimiter between key-value pairs.
 
-        the initial tokens are treated as args, followed by key-value pairs.
+         Example:
 
-        Example:
+             one 'two''s three' four=5 six='seven eight' nine
 
-            one 'two three' four=5 six='seven eight'
+             parses to:
 
-            parses to:
+             args = ['one', "two's three", 'nine']
+             kwargs = {'four': 5, 'six': 'seven eight'}
 
-            args = ['one', 'two three']
-            kwargs = {'four': 5, 'six': 'seven eight'}
+         Return:
 
-        Return:
+             tuple of:
+                 args as list
+                 kwargs as dict
 
-            args as list
-            kwargs as dict
+         Notes:
 
-        Notes:
+             1. The args and kwargs can be intermingled in any order in the
+                input; the order of the args is preserved.
 
-            1. Does not enforce args and keywords as valid python.
+             2. String delimiters can appear within strings by doubling them
+                up; eg: "abc""def" =>  abc"def
 
-            2. String delimiters can be escaped (backslash) within strings.
+             3. Key-value delimiters (=) can be surrounded by blanks.
 
-            3. Key-value delimiters (=) can be surrounded by blanks.
+             4. Non-string integer args and kwarg values will be int; all
+                other values are str.
+     """
 
-            4. Non-string integer kwarg values will be int; all other
-               values are str.
-
-            5. Designed for functionality, not speed
-    """
-    args = []
     kwargs = {}
-    state = 'arg'
-    for token in to_tokens(s):
-        if state == 'arg':
-            if token.is_key:
-                key = token.value
-                state = 'value'
-            else:
-                args.append(token.value)
-        elif state == 'key':
-            if not token.is_key:
-                raise ExpectingKey(token.value)
-            key = token.value
-            if key in kwargs:
-                raise DuplicateKey(key)
-            state = 'value'
-        elif state == 'value':
-            if token.is_key:
-                raise ConsecutiveKeys(token.value)
-            kwargs[key] = token.value
-            state = 'key'
 
-    if state == 'value':
-        raise IncompleteKeyValue(key)
+    # extract a="b" a='b' a=b
+    pats = (('"', r'(\S+)\s*=\s*"(([^"]|"")*)"(\s|$)'),
+            ("'", r"(\S+)\s*=\s*'(([^']|'')*)'(\s|$)"),
+            ('', r'(\S+)\s*=\s*(\S+)'))
+    for delim, pat in pats:
+        while True:
+            res = re.search(pat, line)
+            if not res:
+                break
+            value = res.group(2).replace(delim*2, delim)
+            if not delim and value.isdigit():  # convert if unquoted number
+                value = int(value)
+            kwargs[res.group(1)] = value
+            line = line[:res.start()] + line[res.end():]
+
+    args = _to_args(line)
 
     return args, kwargs
 
 
-class Atom(object):
+def _to_args(line, args=None):
+    """tokenize line into an ordered list of args"""
 
-    ESCAPE = '\\'
+    if args is None:
+        args = []
 
-    def __init__(self, c):
-        self.c = c
-
-    @property
-    def is_string(self):
-        return self.c in ('"', "'")
-
-    @property
-    def is_escape(self):
-        return self.c == self.ESCAPE
-
-    @property
-    def is_equal(self):
-        return self.c == '='
-
-    @property
-    def is_space(self):
-        return self.c.isspace()
-
-
-class Token(object):
-    def __init__(self):
-        self._value = ''
-        self.is_key = False
-        self.string_delim = None
-        self.is_escape = False
-
-    def __repr__(self):
-        t = 's' if self.is_string else 'k' if self.is_key else 't'
-        return '{}[{}]'.format(t, self._value)
-
-    @property
-    def is_new(self):
-        return len(self._value) == 0
-
-    @property
-    def is_string(self):
-        return self.string_delim is not None
-
-    @property
-    def is_escaped_string(self):
-        return self.is_string and self.is_escape
-
-    @property
-    def value(self):
-        if not self.is_string:
-            try:
-                return int(self._value)
-            except ValueError:
-                pass
-        return self._value
-
-    def add(self, atom):
-        if self.is_new:
-            return self._new(atom)
-        if self.is_escaped_string:
-            return self._escaped_string(atom)
-        if self.is_string:
-            return self._string(atom)
-        return self._normal(atom)
-
-    def _new(self, atom):
-        if atom.is_space:
-            return
-        if atom.is_string:
-            self.string_delim = atom.c
-            return
-        if atom.is_equal:
-            return 'equal'
-        self._value += atom.c
-
-    def _escaped_string(self, atom):
-        if atom.c != self.string_delim:
-            self._value += atom.ESCAPE
-        self._value += atom.c
-        self.is_escape = False
-
-    def _string(self, atom):
-        if atom.is_escape:
-            self.is_escape = True
-            return
-        if atom.c == self.string_delim:
-            return 'done'
-        self._value += atom.c
-
-    def _normal(self, atom):
-        if atom.is_space:
-            return 'done'
-        if atom.is_equal:
-            return 'equal'
-        if atom.is_string:
-            return 'invalid'
-        self._value += atom.c
-
-
-class ToArgsException(Exception):
-    pass
-
-
-class InvalidStartCharacter(ToArgsException):
-    pass
-
-
-class ConsecutiveEqual(ToArgsException):
-    pass
-
-
-class UnexpectedCharacter(ToArgsException):
-    pass
-
-
-class ExpectingKey(ToArgsException):
-    pass
-
-
-class DuplicateKey(ToArgsException):
-    pass
-
-
-class ConsecutiveKeys(ToArgsException):
-    pass
-
-
-class IncompleteKeyValue(ToArgsException):
-    pass
-
-
-def to_tokens(s):
-    tokens = []
-    token = Token()
-    for a in [Atom(c) for c in s]:
-
-        result = token.add(a)
-        if result == 'done':
-            if not token.is_new:
-                tokens.append(token)
-                token = Token()
+    # extract '...' "..."
+    pats = (("'", r"'(([^']|'')*)'(\s|$)"),
+            ('"', r'"(([^"]|"")*)"(\s|$)'))
+    for delim, pat in pats:
+        res = re.search(pat, line)
+        if not res:
             continue
-        if result == 'equal':
-            if token.is_new:
-                if len(tokens) == 0:
-                    raise InvalidStartCharacter()
-                if tokens[-1].is_key:
-                    raise ConsecutiveEqual()
-                tokens[-1].is_key = True
-            else:
-                token.is_key = True
-                tokens.append(token)
-                token = Token()
-            continue
-        if result == 'invalid':
-            raise UnexpectedCharacter(a.c)
+        # preserve order: _to_args(left) + match + _to_args(right)
+        args.extend(_to_args(line[:res.start()]))
+        value = res.group(1).replace(delim*2, delim)
+        args.append(value)  # these are quoted, so no int conversion
+        args.extend(_to_args(line[res.end():]))
+        break
 
-    if not token.is_new:
-        tokens.append(token)
+    if not args:
+        # if we didn't find delimited strings, then tokenize by whitespace
+        for arg in line.split():
+            if arg.isdigit():
+                arg = int(arg)
+            args.append(arg)
 
-    return tokens
+    return args
+
+
+if __name__ == '__main__':
+    print(to_args(
+        'a b"b c"c d e "and ""this""" \'b c\' d=e f g h e=1 f="abc""def"'))

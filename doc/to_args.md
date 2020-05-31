@@ -15,43 +15,51 @@ without the commas.
 
 #### args
 
-Args come first in the string, followed by kwargs. Once the switch
-is made to kwargs, args are no longer accepted.
+Args and kwargs can be intermingled in any order.
+The order of the args is preserved.
 
-An arg is any sequence of non-whitespace characters. If an arg contains
-a single (') or double (") quote, it must be preceeded by an escape (\\).
+An arg is any sequence of non-whitespace characters.
 An arg that starts with a single or double quote may contain whitespace,
 and must be terminated by a matching quote.
+A quoted arg may contain the quote character by
+repeating (doubling) the character.
 
 Here are some valid args:
 ```
 a
+a"a
 'a'
 'a b'
-"a b\" c"
+"a b"" c"
 10
 '10'
 ```
 
 #### kwargs
 
-Kwargs are composed of two arg-like values with an equal (=) in between.
+Kwargs are composed of
+a non-quoted arg-like value
+followed by an equal (=)
+followed by an arg-like value.
 The equal may or may not be white-space delimited.
+
+If the value is non-delimited and composed of digits,
+it is converted to an int.
 
 Here are some valid kwargs:
 ```
 a=b
 'a'=b
 a='b'
-"a b" = 'c d e'
+a = 'c d e'
 10 =20
 ```
 
 #### bringing it all together
 ```
 >>> from ergaleia import to_args
->>> args, kwargs = to_args('a b 123 "c d"=10 e="20"')
+>>> args, kwargs = to_args('a b c = 10 e="20" 123')
 >>> args
 ['a', 'b', 123]
 >>> kwargs
-{'c d': 10, 'e', '20'}
+{'c': 10, 'e', '20'}
